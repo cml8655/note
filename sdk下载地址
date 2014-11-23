@@ -1,1 +1,12 @@
 ，楼主这个我测试了不行.so...hosts改为添加以下就OK了#google_android更新203.208.46.146 dl.google.com203.208.46.146 dl-ssl.google.com127.0.0.1 servserv.generals.ea.com
+
+
+//可用配置
+203.208.46.146 www.google.com
+
+#娘子。。。 2014/23 星期日 下午 9:29:10
+74.125.113.121 developer.android.com
+
+#娘子。。。 2014/23 星期日 下午 9:29:23
+203.208.46.146 dl.google.com
+203.208.46.146 dl-ssl.google.com
