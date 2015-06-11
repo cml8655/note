@@ -9,3 +9,153 @@
 	3：缺点： 不支持<merge/>标签
 3：imgaview	
 	1：scaleType=centerCrop 时超过大小的图片将会被截取
+4、用户选择信息
+	即使用户之前为这个intent设置了默认的action，选择界面还是会被显示。
+	下面是更新后的代码：
+	Intent sendIntent = new Intent();
+	sendIntent.setAction(Intent.ACTION_SEND);
+	sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");
+	sendIntent.setType("text/plain");
+	startActivity(Intent.createChooser(sendIntent, getResources().getText(R.string.send_to));
+1：ContentProvicer：
+	1：添加Contract类，如AProvider,则有public final class AContract,内包含表字段和uri信息
+2：联系人
+	1:获取用户所在联系人组
+		// 获取用户所在联系人组
+		Cursor groupCursor = getContentResolver().query(
+				Data.CONTENT_URI,
+				new String[] { GroupMembership.GROUP_ROW_ID },
+				GroupMembership.MIMETYPE + "='"
+						+ GroupMembership.CONTENT_ITEM_TYPE + "' AND "
+						+ Data.RAW_CONTACT_ID + " = " + contactId, null,
+				null);
+3：截屏
+	方式1：	View container = getWindow().getDecorView();
+		container.setDrawingCacheEnabled(true);
+		container.buildDrawingCache();
+		Bitmap bitmap = container.getDrawingCache();
+		Bitmap b = Bitmap.createBitmap(bitmap);
+		img.setImageBitmap(b);
+		container.destroyDrawingCache();
+4:Fragment
+	1:如果有旋转屏幕的话，需要提供无参构造方法、
+5:string转义
+	1：如果一段文字需要多个TextView拼贴,比如:“我叫XXX,今年XX岁了,身高X.X米”;
+	1.在string.xml中先定义好格式
+	<string name="hello">String.xml字符转义拼接: 我叫 %1$s,今年 %2$d岁了,身高 %3$f米。</string>
+	在string.xml中无法直接写成 %d,%s,%f 等这类格式化符号,必须在中间加个转义符"$",而不是平时常用的转义符"\"
+	---新增,网上找的---
+	如何在<string></string>中使用%号:
+	有两个办法可供选择
+	1.用%%来表示1个%，和转意符号 \ 的用法相同.(但我经我测试发现无效,编译不报错,但输出结果是两个%)
+	2.如果你的字符串不需要格式化，可以在你的<string 标签上增加一个属性:formatted="false"例如 <string name="test" formatted="false">% test %</string> 即可.
+	--------------------------------------------------------------------------------------
+	另外附送一些搜到的特殊转义符:
+	XML转义字符 
+	以下为XML标志符的数字和字符串转义符 
+	"     (&#34; 或 &quot;) 
+	'     (&#39; 或 &apos;) 
+	&     (&#38; 或 &amp;) 
+	lt(<) (&#60; 或 &lt;) 
+	gt(>) (&#62; 或 &gt;) 
+
+	下面的字符在 [XML]中被定义为 空白(whitespace)字符： 
+	空格 (&#x0020;) 
+	Tab (&#x0009;) 
+	回车 (&#x000D;) 
+	换行 (&#x000A;)
+6：自定义menuItem
+	@Override
+	public boolean onCreateOptionsMenu(final Menu menu) {
+		getMenuInflater().inflate(R.menu.actionbar_refresh, menu);
+
+		progressBar = new IndeterminateProgressBarStatus() {
+			MenuItem refresh = menu.findItem(R.id.action_refresh);
+
+			@Override
+			public void show(boolean show) {
+				if (null != refresh) {
+					if (show) {
+						MenuItemCompat.setActionView(refresh,
+								R.layout.actionbar_indeterminate_progress);
+					} else {
+						MenuItemCompat.setActionView(refresh, null);
+					}
+				}
+			}
+		};
+
+		//MenuItemCompat.setActionView(menu.findItem(R.id.action_refresh),R.layout.actionbar_indeterminate_progress);
+		return super.onCreateOptionsMenu(menu);
+	}
+	也可以是用menuItem中actionClass
+
+7：jodatime计算时间间隔
+	Interval interval = new Interval(new DateTime("2011-10-22"),
+				new DateTime());
+		Period period = interval.toPeriod();
+		System.out.println(period.getYears());
+
+8：CountDownTimer 时间计数器，可以指定时间循环操作
+
+
+10：#1205  AA提问
+
+11：@Eean 可用于组件的抽象化，将组件可注入view以及其他事件。在依赖于activity的layout组件信息！
+
+12：待测试：GLSurfaceView
+
+13： fragment  routeDialog.setTargetFragment(StoreDetailFragment.this, 0)，设置监听，可以从此入手
+
+14:动画特效：
+	//加速进入  
+	a.setInterpolator(AnimationUtils.loadInterpolator(this, android.R.anim.accelerate_interpolator));   
+	
+	//减速进入  
+	a.setInterpolator(AnimationUtils.loadInterpolator(this,android.R.anim.decelerate_interpolator));       
+	
+	//加速进入.与第一个的区别为当repeatMode为reverse时,仍为加速返回原点  
+	a.setInterpolator(AnimationUtils.loadInterpolator(this,android.R.anim.accelerate_decelerate_interpolator));   
+	
+	//先往后退一点再加速前进  
+	a.setInterpolator(AnimationUtils.loadInterpolator(this,android.R.anim.anticipate_interpolator));         
+	
+	//减速前进,冲过终点前再后退  
+	a.setInterpolator(AnimationUtils.loadInterpolator(this,android.R.anim.overshoot_interpolator));           
+	
+	//case 3,4的结合体  
+	a.setInterpolator(AnimationUtils.loadInterpolator(this,android.R.anim.anticipate_overshoot_interpolator));   
+	
+	//停止前来回振几下  
+	a.setInterpolator(AnimationUtils.loadInterpolator(this, android.R.anim.bounce_interpolator));  
+15：float imageSize = getResources().getDimensionPixelSize(R.dimen.stamp_action_image_size); dp=》px
+    typeArray.apply...
+
+    r1qym1h1
+16：获取activity可以在onAttach中进行获取
+17、animation是耗时操作，回调问题
+    fragment使用replace也可以保存状态
+
+18:handlerObtain方法：
+obtain方法的注释中说得很明白：从整个Messge池中返回一个新的Message实例，在许多情况下使用它，因为它能避免分配新的对象
+如果是这人的话，那么通过调用obtainMessage方法获取Message对象就能避免创建对象，从而减少内存的开销了。
+
+
+19：java引用
+软引用、强化引用、弱引用
+
+20、内存泄漏
+	1. 查询数据库没有关闭游标
+	2、构造Adapter时，没有使用缓存的 convertView 
+	3. Bitmap对象不在使用时调用recycle()没有及时释放
+	4.没有及时释放对象的引用
+
+21、使用jmap和MAT定位内存泄漏OOM
+22：AsyncTask：
+ 其实SerialExecutor也是AsyncTask在3.0版本以后做了最主要的修改的地方，
+ 它在AsyncTask中是以常量的形式被使用的，因此在整个应用程序中的所有AsyncTask实例都会共用同一个SerialExecutor
+
+
+23:自定义滚动条
+android:scrollbars="vertical" //滚动条是垂直的
+android:scrollbarThumbVertical="@drawable/red" //垂直滚动条颜色为red，red可以是一个png的图片或用shape组成的xml图形文件组成的drawable对象。 
