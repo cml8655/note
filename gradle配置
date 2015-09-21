@@ -1,0 +1,125 @@
+apply plugin: 'com.android.application'
+apply plugin: 'robolectric'
+apply plugin: 'android-apt'
+
+def AAVersion = '3.0.1'
+
+
+android {
+    compileSdkVersion 20
+    buildToolsVersion "20.0.0"
+
+    defaultConfig {
+        applicationId 'cn.com.mujipassport.android.app'
+        minSdkVersion 14
+        targetSdkVersion 20
+        versionCode 1
+        versionName '0.1.0'
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file("src/main/keystore/muji_debug_baidu_map.keystore")
+            storePassword "ch3cooh"
+            keyAlias "muji"
+            keyPassword "ch3cooh"
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+    buildTypes {
+        debug {
+        }
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    productFlavors {
+        dev {
+            manifestPlaceholders = [WECHAT_APP_ID  : "wx21bbf75413b3c469", WECHAT_APP_SECRET: "b31c11a712e83812c97a5183227d4593"
+                                    , BAIDU_API_KEY: "4lG9fv8i6luVG0vGs8BZSatE", "BAIDU_PUSH_KEY": "4lG9fv8i6luVG0vGs8BZSatE"
+                                    , "APP_NAME": "MUJIStaging", "WECHAT_CALLBACK_ACTIVITY": ".staging.wxapi.WXEntryActivity"]
+            applicationId 'cn.com.mujipassport.android.app.staging'
+            signingConfig signingConfigs.debug
+        }
+        staging {
+            manifestPlaceholders = [WECHAT_APP_ID  : "wx21bbf75413b3c469", WECHAT_APP_SECRET: "b31c11a712e83812c97a5183227d4593"
+                                    , BAIDU_API_KEY: "4lG9fv8i6luVG0vGs8BZSatE", "BAIDU_PUSH_KEY": "4lG9fv8i6luVG0vGs8BZSatE"
+                                    , "APP_NAME": "MUJIStaging", "WECHAT_CALLBACK_ACTIVITY": ".staging.wxapi.WXEntryActivity"]
+            applicationId 'cn.com.mujipassport.android.app.staging'
+            signingConfig signingConfigs.debug
+        }
+        product {
+            manifestPlaceholders = [WECHAT_APP_ID  : "xxx", WECHAT_APP_SECRET: "xxx"
+                                    , BAIDU_API_KEY: "ei8HqsHmgEbFMKaE3A0v6ZTA", "BAIDU_PUSH_KEY": "ei8HqsHmgEbFMKaE3A0v6ZTA"
+                                    , "APP_NAME": "MUJI", "WECHAT_CALLBACK_ACTIVITY": ".wxapi.WXEntryActivity"]
+            applicationId 'cn.com.mujipassport.android.app'
+            signingConfig signingConfigs.debug
+            versionCode 1
+            versionName '1.0'
+        }
+    }
+    packagingOptions {
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/license.txt'
+    }
+}
+
+//リネーム処理
+android.applicationVariants.all { variant ->
+
+    def buildNumber = "local"
+    if (System.getenv()['BUILD_ID']) {
+        buildNumber = "${System.getenv()['BUILD_ID']}"
+    }
+
+    if (variant.zipAlign) {
+        def apk = variant.outputFile;
+        def name = apk.name.replace(".apk", "-${buildNumber}.apk")
+        variant.outputFile = new File(apk.parentFile, name)
+    }
+
+    def apk = variant.packageApplication.outputFile
+    def fileName = apk.name.replace(".apk", "-${buildNumber}.apk")
+    variant.packageApplication.outputFile = new File(apk.parentFile, fileName)
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:support-v13:20.+'
+    compile 'com.android.support:support-v4:20.+'
+    apt "org.androidannotations:androidannotations:$AAVersion"
+    compile "org.androidannotations:androidannotations:$AAVersion"
+    compile 'com.mcxiaoke.volley:library:1.0.+'
+    compile 'com.google.code.gson:gson:2.2.4'
+    compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
+    compile 'com.google.zxing:core:3.1.0'
+    compile 'org.springframework.android:spring-android-rest-template:1.0.1.RELEASE'
+    compile 'ch.acra:acra:4.5.0'
+    compile 'com.github.castorflex.verticalviewpager:library:19.0.1'
+    compile 'com.google.android.gms:play-services:6.1.11'
+    androidTestCompile 'junit:junit:4.10'
+    androidTestCompile 'org.robolectric:robolectric:2.3+'
+    androidTestCompile 'com.squareup:fest-android:1.0.+'
+    compile project(':slidingmenu')
+    compile project(':actionbarsherlock')
+}
+
+apt {
+    arguments {
+        androidManifestFile variant.processResources.manifestFile
+        resourcePackageName 'cn.com.mujipassport.android.app'
+    }
+}
+
+robolectric {
+    // configure the set of classes for JUnit tests
+    include '**/*Test.class'
+    exclude '**/espresso/**/*.class'
+
+    // configure max heap size of the test JVM
+    maxHeapSize = "2048m"
+}
