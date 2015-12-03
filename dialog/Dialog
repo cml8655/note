@@ -1,0 +1,75 @@
+package cn.com.aeonchina.tlab.ui.view;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.TextView;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import cn.com.aeonchina.tlab.R;
+
+/**
+ * Created by cmlBeliever on 2015/12/3.
+ */
+public class TipDialog extends Dialog {
+
+    @Bind(R.id.dialog_content)
+    TextView contentView;
+    @Bind(R.id.dialog_btn)
+    Button buttonView;
+
+    private int contentRes;
+
+    public TipDialog(Context context, int theme, int contentRes) {
+        super(context, theme);
+        this.contentRes = contentRes;
+
+    }
+
+    public TipDialog(Context context, int contentRes) {
+        super(context, R.style.Dialog);
+        this.contentRes = contentRes;
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.view_dialog);
+        // 设置窗口属性
+        Window window = getWindow();
+        WindowManager.LayoutParams params = window.getAttributes();
+        // 设置宽度、高度、密度、对齐方式
+        params.width = (int) (getContext().getResources().getDisplayMetrics().widthPixels * 0.8);
+        params.gravity = Gravity.CENTER;
+        window.setAttributes(params);
+
+        ButterKnife.bind(this);
+
+        contentView.setText(contentRes);
+        buttonView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
+    }
+}
+
+style:
+<style name="Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@drawable/bg_tip_dialog</item>
+        <!-- 设置无遮罩层 -->
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+    <style name="Dialog.Register" parent="Dialog">
+        <item name="android:windowBackground">@drawable/bg_tip_dialog_register</item>
+    </style>
